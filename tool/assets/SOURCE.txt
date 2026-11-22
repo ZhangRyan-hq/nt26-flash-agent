@@ -1,0 +1,12 @@
+ec718pm-agentboot-usb.bin is an unmodified vendor RAM download agent extracted
+from the archive supplied by the user. It is not part of the MIT upstream code.
+All vendor rights remain with their respective owners.
+
+Source archive: lierda_upgrade_tool_V2.0.0_261119.zip
+Archive SHA256: f154337568c6393bd3f63ea04765e8469f64542f873226a5ea4ff5c24631c39f
+Original archive member:
+lierda_upgrade_tool/_internal/resources/flasher_tool/FlashToolCLI_V4.1.23_260807/product_sets/ec718m_products/common_data/agentboot_usb/agentboot.bin
+Agent SHA256: 0db9e8f3462140c7c368723aa144b976ac033ae45fc6d37db5d959b1c9238019
+Agent size: 50788 bytes
+
+The Linux application checks the size and full digest before opening hardware.

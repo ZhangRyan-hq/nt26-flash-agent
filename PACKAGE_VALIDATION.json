@@ -1,0 +1,23 @@
+{
+  "package_version": "1.0.0",
+  "validation_date": "2026-11-22",
+  "timezone": "Asia/Shanghai",
+  "hardware_accessed": false,
+  "hardware_flashed": false,
+  "checks": {
+    "core_source_byte_identical": true,
+    "manifest_matches_cli_arguments": true,
+    "relocated_entrypoints_with_spaces": true,
+    "real_firmware_full_and_app_inspect": {
+      "passed": true,
+      "sha256": "c2cb005e578fd05ae3f4ea1488ec5dd6de7e204cdafd6be1a4f0fd67f4ee6d45"
+    },
+    "offline_tests_passed": 82,
+    "missing_pyserial_reported_offline_inspect_available": true,
+    "wrong_hash_rejected_before_connection": true,
+    "missing_required_arguments_exit_2": true,
+    "corrupted_vendor_agent_detected": true,
+    "missing_asset_detected": true
+  },
+  "success": true
+}

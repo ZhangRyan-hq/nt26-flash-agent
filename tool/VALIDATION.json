@@ -1,0 +1,14 @@
+{
+  "success": true,
+  "package_sha256": "a56d1eb7ab03fea55cd22a0a688fbed616af55da644951392952ab05be14433e",
+  "readback_verified": true,
+  "generated_headers_verified": true,
+  "preserved_regions_verified": true,
+  "reset_acknowledged": true,
+  "completion_timestamp": "2026-11-21T12:27:38.478908+00:00",
+  "tool": "nt26-flash 0.1.0",
+  "board": "NT26F6D0 / F6D_A / EC718PM_PRD",
+  "host": "Ubuntu Linux",
+  "unit_tests_passed": 82,
+  "tcp_network_tested": false
+}

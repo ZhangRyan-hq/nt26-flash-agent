@@ -1,0 +1,269 @@
+{
+  "schema": "nt26-local-agent-tool/v1",
+  "name": "nt26-flash-agent",
+  "package_version": "1.0.0",
+  "tool_version": "0.1.0",
+  "description": "Portable Linux CLI and Agent Skill for the verified Lierda NT26F6D0 board profile",
+  "skill": "SKILL.md",
+  "usage": "README.md",
+  "path_resolution": {
+    "entrypoints": "relative to directory containing this manifest",
+    "argument_paths": "relative to caller working directory; absolute paths recommended"
+  },
+  "runtime": {
+    "os": "Linux",
+    "python": ">=3.10",
+    "pyserial": "==3.5",
+    "requirements": "requirements.txt",
+    "offline_inspect_requires_pyserial": false
+  },
+  "supported_target": {
+    "board": "L-CT4IT00-YP00W-01_V04",
+    "module": "NT26F6D0",
+    "family": "F6D_A",
+    "product": "EC718PM_PRD",
+    "container": "binpkg v111, four-image observed layout",
+    "flash_bytes": 4194304,
+    "runtime_usb": {
+      "vid": "3505",
+      "pid": "0003",
+      "at_interface": 3
+    },
+    "rom_usb": {
+      "vid": "17d1",
+      "pid": "0001"
+    }
+  },
+  "entrypoints": {
+    "cli": "scripts/nt26-flash",
+    "environment_check": "scripts/check-environment.py",
+    "offline_tests": "scripts/self-test.py"
+  },
+  "invocation": {
+    "default_argv": [
+      "python3",
+      "{root}/scripts/nt26-flash",
+      "{command}",
+      "{arguments...}"
+    ],
+    "use_shell": false,
+    "alternate_interpreter": "Use the same Python/venv for dependency install, environment check and CLI"
+  },
+  "io": {
+    "success_stdout": "one JSON value for functional CLI commands",
+    "stderr": "progress and errors",
+    "failure_stdout": "may be empty; do not require JSON",
+    "help_and_version": "plain text",
+    "address_representation": "decimal integers"
+  },
+  "exit_codes": {
+    "0": "completed; flash additionally requires all success flags and success.json",
+    "1": "file/dependency/device/protocol/verification error",
+    "2": "argument parsing error, no hardware action",
+    "130": "interrupted; state may be incomplete",
+    "other": "failure or unknown state"
+  },
+  "commands": {
+    "devices": {
+      "args": {},
+      "opens_serial": false,
+      "writes_flash": false,
+      "resets_device": false,
+      "stdout_type": "array",
+      "empty_array_is_success": true,
+      "selection_note": "Runtime includes multiple interfaces; only interface_number=3 is AT"
+    },
+    "inspect": {
+      "positional": [
+        {
+          "name": "package",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "args": {
+        "--mode": {
+          "type": "string",
+          "enum": [
+            "full",
+            "app"
+          ],
+          "default": "full"
+        }
+      },
+      "opens_serial": false,
+      "writes_flash": false,
+      "resets_device": false,
+      "stdout_type": "object",
+      "important_fields": [
+        "package_sha256",
+        "mode",
+        "regions",
+        "generated_headers",
+        "preserved_regions",
+        "requires_matching_base",
+        "device_compatibility_verified"
+      ]
+    },
+    "probe": {
+      "args": {
+        "--at-port": {
+          "type": "string",
+          "description": "Verified runtime USB interface 03 path"
+        }
+      },
+      "opens_serial": true,
+      "writes_flash": false,
+      "resets_device": false,
+      "at_commands": [
+        "AT",
+        "AT+CGMR"
+      ],
+      "stdout_type": "object",
+      "success_checks": {
+        "at_ok": true
+      }
+    },
+    "diagnose": {
+      "args": {
+        "--at-port": {
+          "type": "string",
+          "description": "Verified runtime USB interface 03 path"
+        },
+        "--port": {
+          "type": "string",
+          "description": "Verified ROM serial path; use when already in ROM"
+        },
+        "--enter-rom": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow AT reset to ROM"
+        },
+        "--agent": {
+          "type": "string",
+          "description": "Optional identical vendor agent; SHA256 is enforced"
+        },
+        "--report": {
+          "type": "string",
+          "description": "Optional new JSON report file; parent must exist"
+        }
+      },
+      "opens_serial": true,
+      "writes_flash": false,
+      "resets_device": true,
+      "loads_ram_agent": true,
+      "stdout_type": "object",
+      "success_checks": {
+        "flash_written": false,
+        "read_test_bytes": 240,
+        "reset_acknowledged": true
+      }
+    },
+    "flash": {
+      "positional": [
+        {
+          "name": "package",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "args": {
+        "--at-port": {
+          "type": "string",
+          "description": "Verified runtime USB interface 03 path"
+        },
+        "--port": {
+          "type": "string",
+          "description": "Verified ROM serial path; use when already in ROM"
+        },
+        "--enter-rom": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow AT reset to ROM"
+        },
+        "--agent": {
+          "type": "string",
+          "description": "Optional identical vendor agent; SHA256 is enforced"
+        },
+        "--mode": {
+          "type": "string",
+          "enum": [
+            "full",
+            "app"
+          ],
+          "default": "full"
+        },
+        "--confirm-sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$",
+          "required": true,
+          "source": "package_sha256 from the current inspect result"
+        },
+        "--backup-dir": {
+          "type": "string",
+          "required": true,
+          "description": "New directory; parent must exist; cannot reuse"
+        }
+      },
+      "opens_serial": true,
+      "writes_flash": true,
+      "resets_device": true,
+      "loads_ram_agent": true,
+      "requires_user_intent": "Authorization to flash the selected firmware, target board and scope; existing explicit authorization remains valid",
+      "stdout_type": "object",
+      "success_checks": {
+        "success": true,
+        "readback_verified": true,
+        "generated_headers_verified": true,
+        "preserved_regions_verified": true,
+        "reset_acknowledged": true
+      },
+      "success_artifact": "{backup_dir}/success.json",
+      "backup_bytes": 4194304,
+      "automatic_retry": false,
+      "wait_policy": "Retain a running process session and poll it; do not kill a progressing backup/flash using a short timeout"
+    }
+  },
+  "environment_check": {
+    "opens_serial": false,
+    "writes_flash": false,
+    "exit_0": "integrity and tested hardware dependencies available; USB access is NOT tested",
+    "exit_1": "missing/unsupported dependency or damaged distribution",
+    "stdout_type": "object",
+    "fields": [
+      "ready_offline",
+      "ready_hardware_dependencies",
+      "hardware_access_tested",
+      "integrity"
+    ]
+  },
+  "offline_tests": {
+    "hardware_access": false,
+    "stdout_format": "unittest runner output, primarily stderr",
+    "exit_codes": {
+      "0": "all tests pass",
+      "1": "one or more fail"
+    }
+  },
+  "not_implemented": [
+    "raw backup restore",
+    "standalone backup command",
+    "arbitrary AT command",
+    "whole-chip erase",
+    "IMEI/eFuse modification",
+    "generic STM32 flashing"
+  ],
+  "documentation": {
+    "cli": "references/cli.md",
+    "recovery": "references/recovery.md",
+    "validation": "references/validation.md"
+  },
+  "distribution": {
+    "firmware_included": false,
+    "device_backup_included": false,
+    "vendor_ram_agent_included": true,
+    "vendor_notice": "tool/assets/SOURCE.txt",
+    "upstream_licenses": "tool/THIRD_PARTY_NOTICES.txt",
+    "integrity_manifest": "SHA256SUMS"
+  }
+}

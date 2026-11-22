@@ -1,0 +1,4 @@
+interface:
+  display_name: "NT26 Linux 烧录工具"
+  short_description: "利尔达 NT26F6D0 固件检查、Linux 烧录、完整备份和回读校验"
+  default_prompt: "使用 $nt26-flash-agent 检查我指定的 NT26F6D0 固件与设备，并按已授权的范围执行操作。"

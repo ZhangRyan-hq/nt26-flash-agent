@@ -1,0 +1,3 @@
+# Preserve distribution bytes for SHA256 verification.
+* -text
+tool/tests/fixtures/vendor-header-vectors.json whitespace=cr-at-eol
